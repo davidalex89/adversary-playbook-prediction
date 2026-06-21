@@ -1,0 +1,297 @@
+:root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --card: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #22d3ee;
+    --accent-dim: rgba(34, 211, 238, 0.10);
+    --accent-solid: #06b6d4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0 24px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+header {
+    padding: 48px 0 32px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+}
+header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+header .subtitle {
+    font-size: 0.95rem;
+    color: var(--muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.intro {
+    line-height: 1.75;
+}
+.intro p {
+    font-size: 0.88rem;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+.findings {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.findings h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--accent);
+}
+.findings ul {
+    list-style: none;
+    padding: 0;
+}
+.findings li {
+    font-size: 0.84rem;
+    color: var(--text);
+    margin-bottom: 8px;
+    padding-left: 16px;
+    position: relative;
+}
+.findings li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+}
+
+.stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+.stat-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+}
+.stat-label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+.panel h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+.panel-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+.panel-footnote {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+}
+
+.callout {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--accent-dim);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+}
+.callout p {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin: 0;
+}
+
+.method-panel p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+}
+.method-panel a {
+    color: var(--accent);
+    text-decoration: none;
+}
+.method-panel a:hover { text-decoration: underline; }
+.method-panel code {
+    font-size: 0.78rem;
+    background: var(--card);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.glossary-panel dl {
+    display: grid;
+    gap: 20px;
+}
+.glossary-panel dt {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+.glossary-panel dd {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 0;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+.glossary-panel dd:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+@media (min-width: 700px) {
+    .glossary-panel dl {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 12px 20px;
+    }
+    .glossary-panel dd {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+#tech-select {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+.toggle-group {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.toggle-btn {
+    padding: 6px 14px;
+    background: var(--card);
+    border: none;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.toggle-btn.active {
+    background: var(--accent-solid);
+    color: #fff;
+}
+
+.nlp-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+.nlp-stat {
+    text-align: center;
+}
+.nlp-stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+}
+.nlp-stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+footer {
+    text-align: center;
+    padding: 32px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+footer a:hover { text-decoration: underline; }
+.data-source { margin-top: 8px; font-size: 0.72rem; }
+
+@media (max-width: 600px) {
+    body { padding: 0 16px 40px; }
+    header { padding: 32px 0 24px; }
+    header h1 { font-size: 1.4rem; }
+    header .subtitle { font-size: 0.85rem; }
+    .stats-row { gap: 8px; }
+    .stat-card { min-width: 80px; padding: 10px 8px; }
+    .stat-value { font-size: 1.1rem; }
+    .stat-label { font-size: 0.62rem; }
+    .panel { padding: 16px; }
+    .controls { flex-direction: column; }
+    #tech-select { min-width: unset; width: 100%; }
+    .findings li { font-size: 0.82rem; }
+    .callout { padding: 12px 14px; }
+    .callout p { font-size: 0.82rem; }
+    .nlp-stats { gap: 16px; }
+    .nlp-stat-value { font-size: 1rem; }
+    .glossary-panel dt { font-size: 0.82rem; }
+    .glossary-panel dd { font-size: 0.78rem; }
+}

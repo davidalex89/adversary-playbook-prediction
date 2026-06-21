@@ -1,0 +1,8 @@
+pandas
+numpy
+scikit-learn
+umap-learn
+sentence-transformers
+matplotlib
+seaborn
+requests

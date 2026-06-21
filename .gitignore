@@ -1,0 +1,10 @@
+# Large generated files (regenerate with the pipeline scripts)
+output/cooccurrence_jaccard.csv
+output/cooccurrence_lift.csv
+output/semantic_similarity.csv
+output/group_technique_matrix.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/

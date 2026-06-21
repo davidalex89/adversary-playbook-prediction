@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adversary Playbook Prediction</title>
+<meta name="description" content="Given a threat actor's known technique, predict what else they're likely to use. Co-occurrence and clustering models on MITRE ATT&CK data.">
+<link rel="stylesheet" href="dashboard.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+</head>
+<body>
+<header>
+    <h1>Adversary Playbook Prediction</h1>
+    <p class="subtitle">Threat actors are creatures of habit. This model exploits that by analyzing 4,546 documented technique-group relationships across 174 named threat actors to predict what comes next in an adversary's playbook.</p>
+</header>
+
+<section class="intro panel">
+    <h2>The Premise</h2>
+    <p>Threat actors reuse toolkits. An adversary deploying T1566 (Phishing) isn't drawing their next technique at random — they're pulling from a playbook shaped by capability, infrastructure, and operational goals. That means every observed technique carries a statistical signal about what comes next.</p>
+    <p>This model quantifies those signals across 174 named threat groups. The result is a recommender system: given what you've already detected, what should you be hunting for?</p>
+    <div class="findings">
+        <h3>Key Findings</h3>
+        <ul>
+            <li><strong>Strong co-occurrence signals exist.</strong> Many technique pairs have Jaccard similarity scores above 0.5, meaning the majority of groups that use one also use the other.</li>
+            <li><strong>Threat groups cluster into 3 distinct behavioral profiles</strong> — likely reflecting different operational objectives (espionage, financial crime, disruption).</li>
+            <li><strong>Techniques cluster into 6 functional groups</strong> based on which actors actually use them together, independent of the ATT&CK tactic taxonomy.</li>
+            <li><strong>Semantic similarity weakly predicts co-usage (ρ=0.094, p≈0).</strong> Techniques that sound alike are slightly more likely to be co-deployed — but behavior is far more informative than documentation.</li>
+            <li><strong>The average group uses 26 techniques.</strong> The most prolific (Kimsuky, G0094) uses 130. Sparse groups can be enriched using their neighbors' behavior.</li>
+        </ul>
+    </div>
+</section>
+
+<section class="stats-row">
+    <div class="stat-card"><span class="stat-value" id="stat-techniques">—</span><span class="stat-label">Techniques</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-groups">—</span><span class="stat-label">Threat Groups</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-pairs">—</span><span class="stat-label">Usage Pairs</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-avg-ttps">—</span><span class="stat-label">Avg TTPs / Group</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-group-clusters">—</span><span class="stat-label">Group Clusters</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-tech-clusters">—</span><span class="stat-label">Technique Clusters</span></div>
+</section>
+
+<section class="panel">
+    <h2>Technique Co-occurrence Predictor</h2>
+    <p class="panel-desc">Select a technique you've observed in your environment. The model returns the top 10 techniques most frequently co-deployed by the same threat groups — ranked by either Jaccard similarity (penalizes rare techniques) or Lift (highlights unexpected pairings).</p>
+    <div class="controls">
+        <select id="tech-select"><option value="">Loading techniques...</option></select>
+        <div class="toggle-group">
+            <button class="toggle-btn active" data-method="jaccard">Jaccard</button>
+            <button class="toggle-btn" data-method="lift">Lift</button>
+        </div>
+    </div>
+    <canvas id="cooccurrence-chart" height="300"></canvas>
+</section>
+
+<section class="panel">
+    <h2>Threat Group Clusters</h2>
+    <p class="panel-desc">Threat groups projected into 2D via UMAP on their full technique vectors, then clustered with K-Means. Groups that land near each other share operational playbooks. Hover for group names.</p>
+    <canvas id="group-cluster-chart" height="200"></canvas>
+    <p class="panel-footnote">3 clusters emerged — roughly mapping to nation-state espionage operators (broad, persistent TTPs), financially-motivated actors (targeted initial access + exfiltration), and disruptive/destructive groups (fewer techniques, more impact-focused).</p>
+</section>
+
+<section class="panel">
+    <h2>Technique Clusters</h2>
+    <p class="panel-desc">Techniques clustered by which groups use them together. These are behavioral clusters, not the tactical categories defined by ATT&CK — they reflect how adversaries actually combine capabilities in practice.</p>
+    <canvas id="technique-cluster-chart" height="200"></canvas>
+    <p class="panel-footnote">6 clusters reveal functional toolkits: initial access + delivery chains, persistence + privilege escalation bundles, discovery + collection routines, and lateral movement packages.</p>
+</section>
+
+<section class="panel">
+    <h2>Why Doesn't Description Predict Behavior?</h2>
+    <p class="panel-desc">We embedded all 697 technique descriptions using sentence-transformers (MiniLM) and correlated semantic similarity with observed co-occurrence. If ATT&CK descriptions were a reliable proxy for behavioral affinity, you could predict playbooks from documentation alone. They aren't.</p>
+    <div class="nlp-stats" id="nlp-stats"></div>
+    <div class="callout">
+        <p>ρ=0.094 is statistically significant (p≈0) across 242,556 pairs, but the effect is negligible. <strong>Behavioral co-occurrence captures something fundamentally different from textual similarity.</strong> Techniques that sound alike don't get used together — techniques that <em>work</em> together do. This is precisely why the co-occurrence model adds value beyond what keyword-based detection or documentation searches could ever provide.</p>
+    </div>
+</section>
+
+<section class="panel method-panel">
+    <h2>Methodology</h2>
+    <p>Data sourced from the <a href="https://github.com/mitre/cti">MITRE ATT&CK STIX repository</a> (Enterprise layer). The pipeline filters revoked and deprecated entries, resolves STIX relationship objects to build a binary group×technique matrix, then computes pairwise similarity. Clustering uses cosine distance with silhouette-optimized K-Means. NLP embeddings via <code>all-MiniLM-L6-v2</code>. All computation runs offline in Python; the dashboard loads pre-computed JSON.</p>
+</section>
+
+<section class="panel glossary-panel">
+    <h2>Glossary</h2>
+    <dl>
+        <dt>Jaccard Similarity</dt>
+        <dd>A measure of overlap between two sets. For two techniques, it asks: "Of all the groups that use either technique, how many use both?" A score of 1.0 means every group that uses one also uses the other. Think of it like a Venn diagram — Jaccard is the size of the overlap divided by the total area.</dd>
+
+        <dt>Lift</dt>
+        <dd>How much more likely two techniques are to appear together than you'd expect by chance. A Lift of 5 means the pair co-occurs 5× more often than random. Unlike Jaccard, Lift highlights surprising pairings — rare techniques that almost always travel together.</dd>
+
+        <dt>UMAP</dt>
+        <dd>Uniform Manifold Approximation and Projection. A way to squish high-dimensional data (here, 697-column technique vectors) down to a 2D scatter plot while preserving which points are "near" each other. Points close together on the chart are genuinely similar in the full high-dimensional space. Think of it as a map projection — it distorts distances, but neighborhoods stay intact.</dd>
+
+        <dt>K-Means Clustering</dt>
+        <dd>An algorithm that assigns every data point to one of <em>k</em> groups by finding natural groupings. The "k" is chosen by testing several values and picking the one that produces the most internally coherent clusters (via silhouette score). The colors on the scatter plots represent these cluster assignments.</dd>
+
+        <dt>Silhouette Score</dt>
+        <dd>A measure of how well-separated clusters are. Ranges from -1 to 1. Higher means points fit cleanly into their assigned cluster rather than sitting between two clusters. We use it to decide how many clusters (k) to create.</dd>
+
+        <dt>Spearman ρ (rho)</dt>
+        <dd>A correlation coefficient that measures how well the ranking of one variable predicts the ranking of another. Here it answers: "If I rank all technique pairs by semantic similarity and separately by co-occurrence, do the rankings agree?" A value of 0.094 means they barely agree — the rankings are nearly independent.</dd>
+
+        <dt>p-value</dt>
+        <dd>The probability of seeing a result this extreme if there were actually no relationship. A p-value near zero means the correlation isn't a fluke — but it says nothing about whether the effect is large or useful. In our case: the correlation is real but tiny.</dd>
+
+        <dt>Cosine Distance</dt>
+        <dd>A way to measure how different two vectors are based on their direction, ignoring magnitude. Two groups with the same mix of techniques (just more or fewer attributed instances) would have zero cosine distance. It's like comparing the shape of two pie charts regardless of their size.</dd>
+
+        <dt>Sentence Embeddings</dt>
+        <dd>A technique from NLP that converts a paragraph of text into a list of numbers (a vector) such that similar-meaning paragraphs get similar vectors. We used this to ask whether techniques with similar-sounding descriptions behave similarly in practice. (They don't, much.)</dd>
+
+        <dt>Co-occurrence</dt>
+        <dd>Two techniques "co-occur" when the same threat group is documented as using both. High co-occurrence means that in the real world, adversaries who pick up technique A tend to also pick up technique B — whether for operational, logistical, or capability reasons.</dd>
+    </dl>
+</section>
+
+<footer>
+    <p class="data-source">Data: <a href="https://github.com/mitre/cti">MITRE ATT&CK CTI</a> (Enterprise, STIX 2.1) · Analysis: Python (scikit-learn, UMAP, sentence-transformers)</p>
+</footer>
+
+<script src="dashboard.js"></script>
+</body>
+</html>
