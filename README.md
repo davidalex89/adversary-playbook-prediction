@@ -37,6 +37,11 @@ The `dashboard/` directory contains a standalone Chart.js interactive page. Serv
 cd dashboard && python -m http.server 8080
 ```
 
+## Development
+
+`main` is branch-protected. Use feature branches and pull requests — see
+[CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Data Source
 
 [MITRE ATT&CK Enterprise](https://github.com/mitre/cti) (STIX 2.1 bundle)
