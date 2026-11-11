@@ -12,11 +12,8 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
-from sklearn.metrics.pairwise import cosine_distances
-from sklearn.preprocessing import normalize
 
 try:
     import umap
