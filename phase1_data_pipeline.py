@@ -4,8 +4,6 @@ Fetches MITRE ATT&CK Enterprise STIX data, parses techniques, groups,
 and their relationships into clean CSVs for downstream analysis.
 """
 
-import json
-import sys
 from pathlib import Path
 
 import pandas as pd

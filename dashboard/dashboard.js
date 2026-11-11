@@ -28,8 +28,6 @@
     const select = document.getElementById("tech-select");
     select.innerHTML = '<option value="">— Select a technique —</option>';
     techniques.forEach(tid => {
-        const items = jaccardData[tid];
-        const name = items && items.length > 0 ? items[0]?.name || "" : "";
         const opt = document.createElement("option");
         opt.value = tid;
         opt.textContent = tid;
